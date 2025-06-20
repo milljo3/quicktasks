@@ -1,10 +1,10 @@
 {
-  "name": "devlink-backend",
+  "name": "quicktasks-backend",
   "version": "1.0.0",
   "description": "A fullstack application that serves as a trello lite.",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node-dev --transpile-only ./src/index.ts ",
+    "dev": "ts-node-dev --transpile-only src/server.ts ",
     "build": "tsc",
     "start": "node dist/index.js"
   },

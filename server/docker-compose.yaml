@@ -3,16 +3,16 @@ version: "3.9"
 services:
   db:
     image: postgres:15-alpine
-    container_name: devlink-postgres
+    container_name: quicktasks-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: devlink
+      POSTGRES_DB: quicktasks
     ports:
       - "5432:5432"
     volumes:
-      - devlink-postgres-data:/var/lib/postgresql/data
+      - quicktasks-postgres-data:/var/lib/postgresql/data
 
 volumes:
-  devlink-postgres-data:
+  quicktasks-postgres-data:

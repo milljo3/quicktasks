@@ -12,3 +12,52 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id           String      @id @default(cuid())
+  email        String      @unique
+  password     String
+  boards       Board[]     @relation("BoardOwner")
+  sharedBoards BoardUser[]
+}
+
+model Board {
+  id         String      @id @default(cuid())
+  title      String
+  ownerId    String
+  owner      User        @relation("BoardOwner", fields: [ownerId], references: [id])
+  lists      List[]
+  sharedWith BoardUser[]
+}
+
+model BoardUser {
+  id        String  @id @default(cuid())
+  userId    String
+  boardId   String
+  canEdit   Boolean @default(false)
+  canDelete Boolean @default(false)
+  user      User    @relation(fields: [userId], references: [id])
+  board     Board   @relation(fields: [boardId], references: [id])
+
+  @@unique([userId, boardId])
+}
+
+model List {
+  id       String @id @default(cuid())
+  title    String
+  position Int
+  boardId  String
+  board    Board  @relation(fields: [boardId], references: [id])
+  tasks    Task[]
+}
+
+// Can add an association between a task and a user EX: Assign task A to user B
+// Can add tags - similar to trello
+// Can add a card modal - similar to trello - which means more columns/tables like comments, description, title, etc. 
+model Task {
+  id       String @id @default(cuid())
+  content  String
+  position Int
+  listId   String
+  list     List   @relation(fields: [listId], references: [id])
+}
