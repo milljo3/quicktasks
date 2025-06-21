@@ -7,6 +7,7 @@ import prisma from '../prismaClient';
 import {z} from 'zod';
 import {validateBody} from "../middleware/validate";
 import {authSchema} from "../schemas/authSchemas";
+import {AuthenticatedRequest, requireAuth} from "../middleware/auth";
 
 const router = express.Router();
 
@@ -35,8 +36,13 @@ router.post('/register', validateBody(authSchema), async (req: Request, res: Res
             id: user.id
         }, process.env.JWT_SECRET, {expiresIn: '1h'});
 
-        // Respond with the JWT token and a success message
-        return res.status(201).send({token, id: user.id, message: 'User created successfully'});
+        return res.status(201).send({
+            token,
+            user: {
+                id: user.id,
+                email
+            }
+        });
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -68,8 +74,13 @@ router.post('/login', validateBody(authSchema), async (req, res) => {
             id: user.id
         }, process.env.JWT_SECRET, {expiresIn: '1h'});
 
-        // Respond with the JWT token and a success message
-        return res.status(200).send({token, id: user.id, message: "Login success"});
+        return res.status(200).send({
+            token,
+            user: {
+                id: user.id,
+                email
+            }
+        });
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -78,5 +89,38 @@ router.post('/login', validateBody(authSchema), async (req, res) => {
         return res.status(400).send({message: 'Server Error'});
     }
 });
+
+router.get('/verify', requireAuth, (req: AuthenticatedRequest, res: Response) => {
+    try {
+        const userId = req.userId!;
+
+        const user = prisma.user.findUnique({
+            where: {id: userId},
+            select: {
+                id: true,
+                email: true
+            }
+        });
+
+        if (!user) {
+            return res.status(404).send({
+                valid: false,
+                message: 'User not found'
+            });
+        }
+
+        res.status(200).send({
+            valid: true,
+            user: user
+        });
+    }
+    catch (error) {
+        console.error('Token verification error:', error);
+        res.status(500).json({
+            valid: false,
+            message: 'Internal server error'
+        });
+    }
+})
 
 export default router;

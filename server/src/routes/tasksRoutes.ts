@@ -27,7 +27,7 @@ router.patch('/:taskId', validateBody(updateTaskSchema), async (req: Authenticat
             data: {description}
         });
 
-        return res.status(200).json({updatedTask});
+        return res.status(200).json(updatedTask);
     }
     catch (error) {
         res.status(500).send({

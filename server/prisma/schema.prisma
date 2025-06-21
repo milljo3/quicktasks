@@ -22,12 +22,14 @@ model User {
 }
 
 model Board {
-  id      String      @id @default(cuid())
-  title   String
-  ownerId String
-  owner   User        @relation("BoardOwner", fields: [ownerId], references: [id])
-  lists   List[]
-  users   BoardUser[]
+  id        String      @id @default(cuid())
+  title     String
+  ownerId   String
+  owner     User        @relation("BoardOwner", fields: [ownerId], references: [id])
+  lists     List[]
+  users     BoardUser[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
 }
 
 model BoardUser {
@@ -42,21 +44,25 @@ model BoardUser {
 }
 
 model List {
-  id       String @id @default(cuid())
-  title    String
-  position Int
-  boardId  String
-  board    Board  @relation(fields: [boardId], references: [id])
-  tasks    Task[]
+  id        String   @id @default(cuid())
+  title     String
+  position  Int
+  boardId   String
+  board     Board    @relation(fields: [boardId], references: [id])
+  tasks     Task[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // Can add an association between a task and a user EX: Assign task A to user B
 // Can add tags - similar to trello
 // Can add a card modal - similar to trello - which means more columns/tables like comments, description, title, etc. 
 model Task {
-  id          String @id @default(cuid())
+  id          String   @id @default(cuid())
   description String
   position    Float
   listId      String
-  list        List   @relation(fields: [listId], references: [id])
+  list        List     @relation(fields: [listId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
