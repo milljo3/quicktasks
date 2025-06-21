@@ -22,22 +22,21 @@ model User {
 }
 
 model Board {
-  id         String      @id @default(cuid())
-  title      String
-  ownerId    String
-  owner      User        @relation("BoardOwner", fields: [ownerId], references: [id])
-  lists      List[]
-  sharedWith BoardUser[]
+  id      String      @id @default(cuid())
+  title   String
+  ownerId String
+  owner   User        @relation("BoardOwner", fields: [ownerId], references: [id])
+  lists   List[]
+  users   BoardUser[]
 }
 
 model BoardUser {
-  id        String  @id @default(cuid())
-  userId    String
-  boardId   String
-  canEdit   Boolean @default(false)
-  canDelete Boolean @default(false)
-  user      User    @relation(fields: [userId], references: [id])
-  board     Board   @relation(fields: [boardId], references: [id])
+  id      String  @id @default(cuid())
+  userId  String
+  boardId String
+  canEdit Boolean @default(false)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  board   Board   @relation(fields: [boardId], references: [id], onDelete: Cascade)
 
   @@unique([userId, boardId])
 }
@@ -55,9 +54,9 @@ model List {
 // Can add tags - similar to trello
 // Can add a card modal - similar to trello - which means more columns/tables like comments, description, title, etc. 
 model Task {
-  id       String @id @default(cuid())
-  content  String
-  position Int
-  listId   String
-  list     List   @relation(fields: [listId], references: [id])
+  id          String @id @default(cuid())
+  description String
+  position    Float
+  listId      String
+  list        List   @relation(fields: [listId], references: [id])
 }

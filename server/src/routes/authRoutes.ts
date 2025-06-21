@@ -32,12 +32,11 @@ router.post('/register', validateBody(authSchema), async (req: Request, res: Res
         });
 
         const token = jwt.sign({
-            id: user.id,
-            email: user.email
+            id: user.id
         }, process.env.JWT_SECRET, {expiresIn: '1h'});
 
         // Respond with the JWT token and a success message
-        return res.status(201).send({token, email, message: 'User created successfully'});
+        return res.status(201).send({token, id: user.id, message: 'User created successfully'});
     }
     catch (error) {
         if (error instanceof z.ZodError) {
@@ -66,12 +65,11 @@ router.post('/login', validateBody(authSchema), async (req, res) => {
         }
 
         const token = jwt.sign({
-            id: user.id,
-            email: user.email
+            id: user.id
         }, process.env.JWT_SECRET, {expiresIn: '1h'});
 
         // Respond with the JWT token and a success message
-        return res.status(200).send({token, email, message: "Login success"});
+        return res.status(200).send({token, id: user.id, message: "Login success"});
     }
     catch (error) {
         if (error instanceof z.ZodError) {
