@@ -11,6 +11,23 @@
     font-size: 4rem;
 }
 
+#auth-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 45px;
+    text-decoration: none;
+    margin-top: 100px;
+}
+
+#auth-logo h1 {
+    margin: 0;
+    color: white;
+}
+
+#auth-logo-2 {
+    color: var(--primary-color) !important;
+}
 
 #login-form,
 #register-form {

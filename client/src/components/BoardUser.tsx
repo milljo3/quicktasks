@@ -14,7 +14,7 @@ interface BoardUserProps {
 
 const BoardUser = ({currentUserId, user, ownerId, onSetCanEdit, isLoading}: BoardUserProps) => {
     return (
-        <div>
+        <div className="board-user">
             <p>{user.email}</p>
             {currentUserId === ownerId && (
                 user.id !== ownerId && (

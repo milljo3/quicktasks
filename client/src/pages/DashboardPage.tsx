@@ -42,7 +42,7 @@ const DashboardPage = () => {
         getAllBoards().catch();
     }, []);
 
-    const CreateBoard = async () => {
+    const createBoard = async () => {
         if (boardTitle.trim() === "") {
             return;
         }
@@ -55,6 +55,33 @@ const DashboardPage = () => {
                 title: response.title
             }
             setBoards([...boards, newBoard]);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    const handleRenameBoard = async (boardId: string, newTitle: string) => {
+        try {
+            await api.boards.updateBoard(boardId, newTitle);
+
+            const updatedBoards = boards.map(board =>
+                board.id === boardId ? {...board, title: newTitle } : board
+            );
+            setBoards(updatedBoards);
+        }
+        catch (error) {
+            console.error(error);
+        }
+    }
+
+    // Add modal confirmation later
+    const handleDeleteBoard = async (boardId: string) => {
+        try {
+            await api.boards.deleteBoard(boardId);
+
+            const updatedBoards = boards.filter(board => board.id !== boardId);
+            setBoards(updatedBoards);
         }
         catch (error) {
             console.error(error);
@@ -81,9 +108,14 @@ const DashboardPage = () => {
                         </div>
 
                     )}
-
                     {boards.map((board) => (
-                        <BoardDisplay key={board.id} {...board} />
+                        <BoardDisplay
+                            key={board.id}
+                            boardId={board.id}
+                            title={board.title}
+                            onEditTitle={handleRenameBoard}
+                            onDelete={handleDeleteBoard}
+                        />
                     ))}
                 </div>
             </div>
@@ -95,7 +127,7 @@ const DashboardPage = () => {
                     inputValue={boardTitle}
                     onInputChange={(e) => setBoardTitle(e.target.value)}
                     onClose={() => closeModal()}
-                    onConfirm={CreateBoard}
+                    onConfirm={createBoard}
                     confirmText={"Create"}
                 />
             )}

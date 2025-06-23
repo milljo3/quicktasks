@@ -1,8 +1,41 @@
+#board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+}
+
+#board-header-sub {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    height: 100px;
+}
+
+#board-header-sub h1 {
+    margin: 0;
+}
+
+#board-header-sub input {
+    padding: 5px;
+}
+
+#board-header-sub button {
+    width: 25px;
+    height: 25px;
+    align-self: center;
+}
+
 .board-selection-button {
     background-color: transparent;
     text-decoration: transparent;
     border: none;
     transition-duration: 0s;
+    width: 150px;
+    height: 35px;
+    font-size: 1.2rem;
 }
 
 .board-selection-button:hover {
@@ -15,4 +48,129 @@
     text-decoration-color: var(--primary-color);
     text-decoration-thickness: 2px;
     font-weight: 600;
+}
+
+#board-tab-content {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+#board-users {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+    gap: 12px;
+}
+
+#board-users-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.board-users-header {
+    font-size: 1rem;
+}
+
+.header-2 {
+    text-align: right;
+}
+
+.board-user {
+    display: flex;
+    gap: 12px;
+    font-size: 1.25rem;
+    grid-column: span 2
+}
+
+#board-users-add {
+    padding: 7px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+}
+
+#lists-display {
+    display: flex;
+    height: 100%;
+    overflow-x: scroll;
+    overflow-y: inherit;
+    padding-left: 10px;
+    padding-right: 10px;
+    gap: 12px;
+    background-color: var(--background-dark);
+}
+
+.list,
+#list-add {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+    padding: 5px;
+    border-radius: 5px;
+    height: fit-content;
+    min-height: 100px;
+    background-color: var(--foreground-dark);
+    margin-bottom: 40px;
+}
+
+#list-add {
+    justify-content: center;
+    border-radius: 5px;
+    font-size: 1.2rem;
+    border: transparent 1px dashed;
+    min-height: 110px;
+}
+
+#list-add:hover {
+    border: white 1px dashed;
+}
+
+.list-header {
+    display: flex;
+    justify-content: space-between;
+}
+
+.list-header h3 {
+    flex: 1;
+    margin: 0;
+    padding: 3px;
+    font-size: 1.25rem;
+    text-wrap: wrap;
+    text-align: left;
+}
+
+.list-header button {
+    border-radius: 5px;
+    margin-right: 3px;
+}
+
+.list-body {
+    flex: 1;
+}
+
+.list-add-task {
+    border-radius: 5px;
+    min-height: 30px;
+}
+
+.task {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    background-color: var(--primary-color);
+    border-radius: 5px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.task div {
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }

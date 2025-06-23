@@ -1,3 +1,22 @@
+#board-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 45px;
+    text-decoration: none;
+    margin-top: 10px;
+}
+
+#board-logo p {
+    margin: 0;
+    font-size: 2rem;
+    color: white;
+}
+
+#board-logo-2 {
+    color: var(--primary-color) !important;
+}
+
 #navbar-sign-out {
     position: fixed;
     top: 10px;
@@ -5,4 +24,13 @@
     height: 30px;
     width: 80px;
     border-radius: 0.5rem;
+}
+
+@media (min-width: 601px) {
+    #board-logo {
+        position: absolute;
+        top: 25px;
+        left: 5px;
+        margin-left: 10px;
+    }
 }

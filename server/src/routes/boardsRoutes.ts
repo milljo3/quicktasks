@@ -74,7 +74,7 @@ router.get('/:boardId', async (req: AuthenticatedRequest, res: Response) => {
         });
 
         if (!board) {
-            res.status(404).send({
+            return res.status(404).send({
                 message: "Board not found",
             });
         }

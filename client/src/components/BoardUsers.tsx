@@ -84,8 +84,10 @@ const BoardUsers = ({users, setUsers, ownerId, currentUserCanEdit}: BoardUsersPr
     }
 
     return (
-        <div>
-            <div id="board-users">
+        <div id="board-users">
+            <div id="board-users-display">
+                <h2 className="board-users-header">User:</h2>
+                <h2 className="board-users-header header-2">Can Edit:</h2>
                 {users.map((u: UserType) => (
                     <BoardUser
                         key={u.id}
@@ -98,7 +100,7 @@ const BoardUsers = ({users, setUsers, ownerId, currentUserCanEdit}: BoardUsersPr
                 ))}
             </div>
             {currentUserCanEdit && (
-                <button onClick={openModal}>
+                <button id="board-users-add" onClick={openModal}>
                     Add User
                 </button>
             )}

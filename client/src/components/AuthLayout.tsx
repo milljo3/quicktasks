@@ -4,7 +4,10 @@ import '../styles/authLayout.css'
 const AuthLayout = ({children} : {children: React.ReactNode}) => {
     return (
         <div id="auth-layout">
-            <h1>QuickTasks</h1>
+            <div id="auth-logo">
+                <h1>Quick</h1>
+                <h1 id="auth-logo-2">Tasks</h1>
+            </div>
             {children}
             <div id="auth-signature">
                 <small>Created by</small>
