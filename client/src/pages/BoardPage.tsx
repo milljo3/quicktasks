@@ -152,7 +152,6 @@ const BoardPage = () => {
             {isLoading ? (<p>Loading...</p>) : (
                 <>
                     <div id="board-header">
-
                         <div id="board-header-sub">
                             {isEditingBoardName ? (
                                 <input

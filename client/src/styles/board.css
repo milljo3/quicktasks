@@ -26,6 +26,7 @@
     width: 25px;
     height: 25px;
     align-self: center;
+    border-radius: 5px;
 }
 
 .board-selection-button {
@@ -154,6 +155,13 @@
 .list-add-task {
     border-radius: 5px;
     min-height: 30px;
+    background-color: var(--foreground-dark);
+    border: transparent 1px dashed;
+}
+
+.list-add-task:hover {
+    border: white 1px dashed;
+    background-color: transparent;
 }
 
 .task {
