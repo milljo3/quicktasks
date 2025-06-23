@@ -1,5 +1,6 @@
 import {createContext, useContext, useEffect, useState} from "react";
-import {useApiServices} from "../hooks/useApiServices";
+import axios from "axios";
+import {API_CONFIG} from "../config/api";
 
 interface User {
     id: string;
@@ -17,7 +18,6 @@ interface AuthContext {
 const AuthContext = createContext<AuthContext | undefined>(undefined);
 
 export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
-    const api = useApiServices();
     const [token, setToken] = useState<string | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -29,9 +29,13 @@ export const AuthProvider = ({ children }: {children: React.ReactNode}) => {
 
             if (storedToken && storedUser) {
                 try {
-                    const response = await api.auth.verify();
+                    const response = await axios.get(`${API_CONFIG.baseURL}/api/auth/verify`, {
+                        headers: {
+                            Authorization: `Bearer ${storedToken}`
+                        },
+                    });
 
-                    if (response.valid) {
+                    if (response.status === 200) {
                         setToken(storedToken);
                         setUser(JSON.parse(storedUser));
                     }

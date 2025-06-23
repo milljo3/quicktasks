@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {ApiCallFunction, AuthResponse, AuthVerify} from "../types/api";
+import {AuthResponse} from "../types/api";
 
 // Authenticates a user by logging them in with their username and password
 export const login = async (email: string, password: string): Promise<AuthResponse> => {
@@ -18,11 +18,3 @@ export const register = async (email: string, password: string): Promise<AuthRes
     });
     return res.data;
 };
-
-export const createAuthApi = (apiCall: ApiCallFunction) => ({
-    verify: (): Promise<AuthVerify> =>
-        apiCall({
-            method: 'GET',
-            url: '/api/auth/verify',
-    }),
-});

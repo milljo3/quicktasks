@@ -90,11 +90,11 @@ router.post('/login', validateBody(authSchema), async (req, res) => {
     }
 });
 
-router.get('/verify', requireAuth, (req: AuthenticatedRequest, res: Response) => {
+router.get('/verify', requireAuth, async (req: AuthenticatedRequest, res: Response) => {
     try {
         const userId = req.userId!;
 
-        const user = prisma.user.findUnique({
+        const user = await prisma.user.findUnique({
             where: {id: userId},
             select: {
                 id: true,
@@ -104,20 +104,17 @@ router.get('/verify', requireAuth, (req: AuthenticatedRequest, res: Response) =>
 
         if (!user) {
             return res.status(404).send({
-                valid: false,
                 message: 'User not found'
             });
         }
 
         res.status(200).send({
-            valid: true,
             user: user
         });
     }
     catch (error) {
         console.error('Token verification error:', error);
         res.status(500).json({
-            valid: false,
             message: 'Internal server error'
         });
     }

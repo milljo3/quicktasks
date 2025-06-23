@@ -32,8 +32,6 @@ body,
     height: 100%;
     width: 100%;
     align-content: center;
-    padding-left: 10px;
-    padding-right: 10px;
     background-color: var(--background-dark);
     color: var(--text-light);
 }

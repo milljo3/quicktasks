@@ -1,4 +1,4 @@
-import { ApiCallFunction, UserBoardsResponse, BoardWithListsAndTasks, BoardWithUsers, Board, List, BoardUsersResponse, BoardUser } from '../types/api';
+import { ApiCallFunction, UserBoardsResponse, BoardWithListsAndTasksAndUsers, BoardWithUsers, Board, List, BoardUsersResponse, BoardUser } from '../types/api';
 
 export const createBoardsApi = (apiCall: ApiCallFunction) => ({
     // GET /api/boards - returns array of simplified board objects
@@ -8,8 +8,8 @@ export const createBoardsApi = (apiCall: ApiCallFunction) => ({
             url: '/api/boards'
         }),
 
-    // GET /api/boards/:boardId - returns board with lists and tasks
-    getBoard: (boardId: string): Promise<BoardWithListsAndTasks> =>
+    // GET /api/boards/:boardId - returns board with lists, tasks and users
+    getBoard: (boardId: string): Promise<BoardWithListsAndTasksAndUsers> =>
         apiCall({
             method: 'GET',
             url: `/api/boards/${boardId}`

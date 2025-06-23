@@ -59,7 +59,17 @@ router.get('/:boardId', async (req: AuthenticatedRequest, res: Response) => {
                             orderBy: {position: 'asc'}
                         }
                     }
-                }
+                },
+                users: {
+                    include: {
+                        user: {
+                            select: {
+                                id: true,
+                                email: true
+                            }
+                        }
+                    }
+                },
             }
         });
 
@@ -223,7 +233,7 @@ router.get('/:boardId/users', async (req: AuthenticatedRequest, res: Response) =
     }
 });
 
-// Share the board with another user - should also include edit/delete permissions
+// Share the board with another user - should also include edit permissions
 router.post('/:boardId/share', validateBody(shareBoardSchema), async (req: AuthenticatedRequest, res: Response) => {
     const {boardId} = req.params;
     const userId = req.userId!;
@@ -239,6 +249,21 @@ router.post('/:boardId/share', validateBody(shareBoardSchema), async (req: Authe
         if (!getUser) {
             res.status(404).send({
                 message: "Email not found."
+            });
+        }
+
+        const existingShare = await prisma.boardUser.findUnique({
+            where: {
+                userId_boardId: {
+                    userId: getUser.id,
+                    boardId: boardId
+                }
+            }
+        })
+
+        if (existingShare) {
+            return res.status(400).send({
+                message: "User already has access to this board"
             });
         }
 
@@ -268,6 +293,12 @@ router.patch('/:boardId/share', validateBody(updateBoardPermissionsSchema), asyn
 
     try {
         await requireBoardOwnership(boardId, reqUserId);
+
+        if (reqUserId == userId) {
+            return res.status(400).send({
+                message: "Board owners cannot remove their own edit permissions."
+            });
+        }
 
         const user = await prisma.boardUser.update({
             where: {

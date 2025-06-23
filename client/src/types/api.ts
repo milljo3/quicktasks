@@ -3,11 +3,6 @@ export interface User {
     email: string;
 }
 
-export interface AuthVerify {
-    valid: boolean;
-    User: User;
-}
-
 export interface AuthResponse {
     token: string;
     user: User
@@ -43,6 +38,10 @@ export interface BoardUser {
     userId: string;
     boardId: string;
     canEdit: boolean;
+    user: {
+        id: string;
+        email: string;
+    }
 }
 
 export interface UserBoardsResponse {
@@ -52,10 +51,11 @@ export interface UserBoardsResponse {
     };
 }
 
-export interface BoardWithListsAndTasks extends Board {
+export interface BoardWithListsAndTasksAndUsers extends Board {
     lists: Array<List & {
         tasks: Task[];
     }>;
+    users: BoardUser[];
 }
 
 export interface BoardWithUsers extends Board {
