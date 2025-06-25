@@ -98,7 +98,9 @@ const DashboardPage = () => {
             )}
             <div id="dashboard-body">
                 <h2>Your boards:</h2>
-                <div id="dashboard-boards">
+                <div id="dashboard-boards" style={boards.length === 0 ? {
+                    justifyContent: "center",
+                } : {justifyContent: "left"}}>
                     {boards.length === 0 && (
                         <div id="dashboard-no-boards">
                             <h2>No boards yet? <br/> Create a new board:</h2>

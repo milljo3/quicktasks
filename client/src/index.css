@@ -33,6 +33,7 @@ body,
     width: 100%;
     align-content: center;
     background-color: var(--background-dark);
+    overflow-y: scroll;
     color: var(--text-light);
 }
 

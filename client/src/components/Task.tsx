@@ -24,29 +24,31 @@ const Task = ({task, onEdit, onDelete}: TaskProps) => {
 
     return (
         <div className="task">
-            {isEditing ? (
-                <input
-                    type="text"
-                    placeholder="Enter task description"
-                    value={inputValue}
-                    autoFocus={true}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onBlur={handleEditConfirm}
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            handleEditConfirm();
-                        }
-                        else if (e.key === "Escape") {
-                            setInputValue(task.description);
-                            setIsEditing(false);
-                        }
-                    }}
-                />
-            ) : (
-                <p>{task.description}</p>
-            )}
+            <div className="task-content">
+                {isEditing ? (
+                    <input
+                        type="text"
+                        placeholder="Enter task description"
+                        value={inputValue}
+                        autoFocus={true}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        onBlur={handleEditConfirm}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleEditConfirm();
+                            }
+                            else if (e.key === "Escape") {
+                                setInputValue(task.description);
+                                setIsEditing(false);
+                            }
+                        }}
+                    />
+                ) : (
+                    <p>{task.description}</p>
+                )}
+            </div>
             {!isEditing && (
-                <div>
+                <div className="task-edit-buttons">
                     <button onClick={() => setIsEditing(true)}>
                         <i className="fa-solid fa-pen-to-square"></i>
                     </button>

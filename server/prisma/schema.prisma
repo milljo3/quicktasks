@@ -46,7 +46,7 @@ model BoardUser {
 model List {
   id        String   @id @default(cuid())
   title     String
-  position  Int
+  position  Decimal
   boardId   String
   board     Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
   tasks     Task[]
@@ -60,7 +60,7 @@ model List {
 model Task {
   id          String   @id @default(cuid())
   description String
-  position    Float
+  position    Decimal
   listId      String
   list        List     @relation(fields: [listId], references: [id], onDelete: Cascade)
   createdAt   DateTime @default(now())
