@@ -2,37 +2,43 @@ import List from "./List";
 import {useState} from "react";
 import {useApiServices} from "../hooks/useApiServices";
 import {useParams} from "react-router-dom";
+import {DndContext, DragCancelEvent, DragEndEvent, DragOverEvent, DragStartEvent} from "@dnd-kit/core";
+import {arrayMove} from "@dnd-kit/sortable";
 
 interface TaskType {
     id: string;
-    description: string;
+    description: string
+    position: number;
 }
 
 interface ListEntity {
     id: string;
     title: string;
     taskIds: string[];
+    position: number;
 }
 
 interface BoardState {
     lists: Record<string, ListEntity>;
     tasks: Record<string, TaskType>;
-    listOrder: string[];
 }
 
 interface ListsDisplayProps {
     lists: Record<string, ListEntity>;
-    tasks: Record<string, TaskType>;
     listOrder: string[];
+    boardState: BoardState;
     setBoardState: React.Dispatch<React.SetStateAction<BoardState>>;
     currentUserCanEdit: boolean;
 }
 
-const ListsDisplay = ({lists, tasks, listOrder, setBoardState, currentUserCanEdit}: ListsDisplayProps) => {
+const ListsDisplay = ({lists, listOrder, boardState, setBoardState, currentUserCanEdit}: ListsDisplayProps) => {
     const api = useApiServices();
     const {boardId} = useParams<{boardId: string}>();
 
     const [deletingListIds, setDeletingListIds] = useState<Set<string>>(new Set());
+    const [dragSnapshot, setDragSnapshot] = useState<BoardState | null>(null);
+
+    const displayState = dragSnapshot || boardState;
 
     const addList = async () => {
         if (!currentUserCanEdit) {
@@ -44,18 +50,24 @@ const ListsDisplay = ({lists, tasks, listOrder, setBoardState, currentUserCanEdi
         try {
             const response = await api.boards.createList(boardId!, defaultTitle)
 
-            setBoardState((prev) => ({
-                ...prev,
-                lists: {
-                    ...prev.lists,
-                    [response.id]: {
-                        id: response.id,
-                        title: defaultTitle,
-                        taskIds: []
+            setBoardState((prev) => {
+                const currentPositions = Object.values(prev.lists).map(l => l.position);
+                const maxPosition = currentPositions.length > 0 ? Math.max(...currentPositions) : 0;
+                const newPosition = maxPosition + 1;
+
+                return {
+                    ...prev,
+                    lists: {
+                        ...prev.lists,
+                        [response.id]: {
+                            id: response.id,
+                            title: defaultTitle,
+                            taskIds: [],
+                            position: newPosition
+                        }
                     }
-                },
-                listOrder: [...prev.listOrder, response.id],
-            }));
+                };
+            });
         }
         catch (error) {
             console.error(error);
@@ -74,7 +86,6 @@ const ListsDisplay = ({lists, tasks, listOrder, setBoardState, currentUserCanEdi
             return {
                 ...prev,
                 lists: newLists,
-                listOrder: prev.listOrder.filter((id) => id !== listId),
             };
         });
 
@@ -93,11 +104,6 @@ const ListsDisplay = ({lists, tasks, listOrder, setBoardState, currentUserCanEdi
                     ...prev.lists,
                     [removedList.id]: removedList
                 },
-                listOrder: [
-                    ...prev.listOrder.slice(0, prev.listOrder.indexOf(listId)),
-                    listId,
-                    ...prev.listOrder.slice(prev.listOrder.indexOf(listId))
-                ]
             }));
         }
         finally {
@@ -133,9 +139,18 @@ const ListsDisplay = ({lists, tasks, listOrder, setBoardState, currentUserCanEdi
             const response = await api.lists.createTask(listId, taskDescription);
 
             setBoardState(prev => {
+                const currentTasks = prev.lists[listId].taskIds
+                    .map(id => prev.tasks[id])
+                    .filter(Boolean);
+
+                const maxPosition = currentTasks.length > 0
+                    ? Math.max(...currentTasks.map(t => t.position))
+                    : 0;
+
                 const newTask = {
                     id: response.id,
                     description: response.description,
+                    position: maxPosition + 1
                 };
 
                 const newTasks = {
@@ -157,7 +172,7 @@ const ListsDisplay = ({lists, tasks, listOrder, setBoardState, currentUserCanEdi
                     ...prev,
                     tasks: newTasks,
                     lists: newLists
-                };
+                }
             });
         }
         catch (error) {
@@ -211,16 +226,78 @@ const ListsDisplay = ({lists, tasks, listOrder, setBoardState, currentUserCanEdi
         }
     }
 
+    const handleDragStart = (e: DragStartEvent) => {
+        if (!currentUserCanEdit) return;
+
+        setDragSnapshot({...boardState});
+    };
+
+
+    const handleDragOver = (e: DragOverEvent) => {
+
+    };
+
+    const handleDragEnd = async (e: DragEndEvent) => {
+        setDragSnapshot(null);
+
+        const activeId = e.active.id.toString();
+        const overId = e.over?.id?.toString();
+        const containerId = e.active.data.current?.sortable.containerId;
+        const overContainerId = e.over?.data.current?.sortable.containerId;
+
+        if (!overId || !containerId || containerId !== overContainerId || activeId === overId) {
+            return;
+        }
+
+        const list = boardState.lists[containerId];
+        const oldIndex = list.taskIds.indexOf(activeId);
+        const newIndex = list.taskIds.indexOf(overId);
+
+        if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return;
+
+        setBoardState(prev => {
+            const list = prev.lists[containerId];
+            const newTaskIds = arrayMove(list.taskIds, oldIndex, newIndex);
+
+            return {
+                ...prev,
+                lists: {
+                    ...prev.lists,
+                    [containerId]: {
+                        ...list,
+                        taskIds: newTaskIds
+                    }
+                }
+            };
+        });
+
+        try {
+            await api.tasks.reorderTask(activeId, newIndex, containerId);
+        }
+        catch (error) {
+            console.error("Failed to reorder task:", error);
+        }
+    };
+
+    const handleDragCancel = (e: DragCancelEvent) => {
+        setDragSnapshot(null);
+    }
+
     return (
-        <>
+        <DndContext
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDragEnd={handleDragEnd}
+            onDragCancel={handleDragCancel}
+        >
             <div id="lists-display">
                 {listOrder.map((listId) => {
-                    const list = lists[listId];
+                    const list = displayState.lists[listId];
                     if (!list) {
                         return null;
                     }
 
-                    const listsTasks = list.taskIds.map((id) => tasks[id]);
+                    const listsTasks= list.taskIds.map(id => displayState.tasks[id]).filter(Boolean);
 
                     return (
                         <List
@@ -243,7 +320,7 @@ const ListsDisplay = ({lists, tasks, listOrder, setBoardState, currentUserCanEdi
                     </button>
                 )}
             </div>
-        </>
+        </DndContext>
     )
 }
 

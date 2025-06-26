@@ -12,12 +12,14 @@ type Tab = 'board' | 'users';
 interface TaskType {
     id: string;
     description: string;
+    position: number;
 }
 
 interface ListEntity {
     id: string;
     title: string;
     taskIds: string[];
+    position: number;
 }
 
 interface UserType {
@@ -29,7 +31,6 @@ interface UserType {
 interface BoardState {
     lists: Record<string, ListEntity>;
     tasks: Record<string, TaskType>;
-    listOrder: string[];
 }
 
 const BoardPage = () => {
@@ -44,7 +45,6 @@ const BoardPage = () => {
     const [boardState, setBoardState] = useState<BoardState>({
         lists: {},
         tasks: {},
-        listOrder: []
     });
     const [isEditingBoardName, setIsEditingBoardName] = useState(false);
     const [boardName, setBoardName] = useState('');
@@ -61,20 +61,22 @@ const BoardPage = () => {
 
                 const lists: Record<string, ListEntity> = {};
                 const tasks: Record<string, TaskType> = {};
-                const listOrder: string[] = [];
 
                 response.lists.forEach((list) => {
-                    listOrder.push(list.id);
                     lists[list.id] = {
                         id: list.id,
                         title: list.title,
-                        taskIds: list.tasks.map((task) => {
-                            tasks[task.id] = {
-                                id: task.id,
-                                description: task.description
-                            };
-                            return task.id;
-                        }),
+                        position: list.position,
+                        taskIds: list.tasks
+                            .sort((a, b) => Number(a.position) - Number(b.position))
+                            .map((task) => {
+                                tasks[task.id] = {
+                                    id: task.id,
+                                    description: task.description,
+                                    position: Number(task.position)
+                                };
+                                return task.id
+                            })
                     };
                 });
 
@@ -88,7 +90,7 @@ const BoardPage = () => {
                 setInputValue(response.title);
                 setOwnerId(response.ownerId);
                 setUsers(transformedUsers);
-                setBoardState({lists, tasks, listOrder});
+                setBoardState({lists, tasks});
             }
             catch (error) {
                 console.error(error);
@@ -101,14 +103,20 @@ const BoardPage = () => {
         getBoard().catch();
     }, []);
 
+    const getOrderedLists = () => {
+        return Object.values(boardState.lists)
+            .sort((a, b) => a.position - b.position)
+            .map(list => list.id);
+    };
+
     const renderTabContent = () => {
         switch (activeTab) {
             case 'board': {
                 return (
                     <ListsDisplay
                         lists={boardState.lists}
-                        tasks={boardState.tasks}
-                        listOrder={boardState.listOrder}
+                        listOrder={getOrderedLists()}
+                        boardState={boardState}
                         setBoardState={setBoardState}
                         currentUserCanEdit={currentUserCanEdit}
                     />

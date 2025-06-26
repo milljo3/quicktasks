@@ -1,8 +1,11 @@
 import { useState } from "react";
+import {useSortable} from "@dnd-kit/sortable";
+import {CSS} from "@dnd-kit/utilities";
 
 interface TaskType {
     id: string;
     description: string;
+    position: number;
 }
 
 interface TaskProps {
@@ -15,6 +18,24 @@ const Task = ({task, onEdit, onDelete}: TaskProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [inputValue, setInputValue] = useState(task.description);
 
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({
+        id: task.id,
+        disabled: isEditing
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+    };
+
     const handleEditConfirm = () => {
         if (inputValue.trim() !== "" && inputValue.trim() !== task.description) {
             onEdit(task.id, inputValue.trim());
@@ -23,8 +44,8 @@ const Task = ({task, onEdit, onDelete}: TaskProps) => {
     }
 
     return (
-        <div className="task">
-            <div className="task-content">
+        <div className="task" ref={setNodeRef} style={style}>
+            <div className="task-content" {...attributes} {...listeners}>
                 {isEditing ? (
                     <input
                         type="text"

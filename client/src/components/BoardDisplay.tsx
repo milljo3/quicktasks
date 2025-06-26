@@ -49,7 +49,12 @@ const BoardDisplay = ({boardId, title, onEditTitle, onDelete}: BoardDisplayProps
                 <button onClick={() => setIsEditing(true)}>
                     <i className="fa-solid fa-pen-to-square"></i>
                 </button>
-                <button onClick={() => onDelete(boardId)}>
+                <button onClick={() => {
+                        if (window.confirm('Are you sure you want to delete this category?')) {
+                            onDelete(boardId);
+                        }
+                    }}
+                >
                     <i className="fa-solid fa-trash"></i>
                 </button>
             </div>

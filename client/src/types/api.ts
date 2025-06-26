@@ -83,4 +83,5 @@ export interface ApiCallConfig {
     headers?: Record<string, string>;
 }
 
+
 export type ApiCallFunction = (config: ApiCallConfig) => Promise<any>;

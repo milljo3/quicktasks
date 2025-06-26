@@ -179,12 +179,11 @@
     margin-top: 10px;
     margin-bottom: 10px;
     position: relative;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
 }
 
 .task:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
 }
 
 .task-content {
@@ -201,21 +200,8 @@
     margin: 0;
 }
 
-.task-content {
-    pointer-events: none;
-}
-
-.task-content input {
-    pointer-events: auto;
-}
-
 .task-edit-buttons {
     position: absolute;
     top: 5px;
     right: 5px;
-    pointer-events: auto;
-}
-
-.task-edit-buttons button {
-    pointer-events: auto;
 }

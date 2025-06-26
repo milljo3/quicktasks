@@ -87,6 +87,10 @@ router.patch('/:taskId/reorder', validateBody(reorderTaskSchema), async (req: Au
             orderBy: {position: 'asc'}
         });
 
+        if (task.listId === toListId && newIndex == tasks.findIndex(t => t.id === newIndex)) {
+            return res.status(200).json(task);
+        }
+
         if (newIndex < 0 || newIndex > tasks.length) {
             return res.status(400).json({
                 message: "Invalid position",
@@ -123,7 +127,13 @@ router.patch('/:taskId/reorder', validateBody(reorderTaskSchema), async (req: Au
     }
 });
 
-async function calculatePosition(tasks: any[], newIndex: number, listId: string): Promise<number> {
+interface TaskWithList {
+    id: string;
+    position: number;
+    listId: string;
+}
+
+async function calculatePosition(tasks: TaskWithList[], newIndex: number, listId: string): Promise<number> {
     const prev = tasks[newIndex - 1];
     const next = tasks[newIndex];
 
